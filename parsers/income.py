@@ -1,17 +1,22 @@
 import sys
 
-def parseIncome(line, name, file, income, isDl = 0):
-    print(f"parse {name}")
-    line = line.replace(",", "")
-    numbers = line.split(' ')
-    x = int(numbers[1])
-    y = int(numbers[2])
-    flags = 0
-    landIncome = 0
-    if (len(numbers) > 3):
-        print(f"flags {numbers[3]}")
-        flags = int(numbers[3])
-    if isDl == 1:
+def parseIncome(fullLine, origName, file, origIncome, isDl = 0):
+    print(f"parse {origName} in line {fullLine}")
+    fullLine = fullLine[2:]
+    lines = fullLine.split(",")
+    for line in lines:
+      if len(line) < 3:
+        continue
+      numbers = line.split(' ')
+      x = int(numbers[0])
+      y = int(numbers[1])
+      flags = 0
+      landIncome = 0
+      name = origName
+      income = origIncome
+      if (len(numbers) > 2):
+        flags = int(numbers[2])
+      if isDl == 1:
         with open("ANT.DAT", 'r', encoding='cp1251') as rfile:
             print(f"Finding land by {x:02d}-{y:02d}")
             lineCount = 1
@@ -29,18 +34,18 @@ def parseIncome(line, name, file, income, isDl = 0):
                     print(f"landIncome is {landIncome} lineCount: {lineCount}")
                     break
                 lineCount += 1
-    income += landIncome
-    if flags >= 128:
-        if isDl != 1:
-            name += " (ЛВ)"
-            income = 0
-        else:
+      income += landIncome
+      if flags >= 128:
+          if isDl != 1:
+              name += " (ЛВ)"
+              income = 0
+          else:
             name += " (Ст)"
             income += 5
-    name = name + (" " * (18 - len(name)))
-    fileLine = f" {name} | {x:02d}-{y:02d} |     {income:03d}    |\n"
-    print(fileLine)
-    file.write(fileLine)
+      name = name + (" " * (18 - len(name)))
+      fileLine = f" {name} | {x:02d}-{y:02d} |     {income:03d}    |\n"
+      print(fileLine)
+      file.write(fileLine)
     return income
 
 with open(sys.argv[1], 'r', encoding='cp1251') as rfile:

@@ -1,53 +1,63 @@
 import sys
 
-def parseArmy(line, name, file):
-    print(f"parse {name}")
-    line = line.replace(",", "")
-    numbers = line.split(' ')
-    x = int(numbers[1])
-    y = int(numbers[2])
-    flags = 0
-    na = 0
-    if (len(numbers) > 3):
-        print(f"flags {numbers[3]}")
-        flags = int(numbers[3])
-    if flags >= 128:
-        name += " (ЛВ)"
-    if flags - flags//64 == 32:
-        na = 1
-    name = name + (" " * (14 - len(name)))
-    if na == 0:
-       fileLine = f" {name} | {x:02d}-{y:02d} |       |       |       |       |       |       |\n"
-    else: 
-       fileLine = f" {name} | {x:02d}-{y:02d} |  N/A  |  N/A  |  N/A  |  N/A  |  N/A  |  N/A  |\n" 
-    print(fileLine)
-    file.write(fileLine)
+def parseArmy(fullLine, origName, file):
+    print(f"parse {origName} in line {fullLine}")
+    fullLine = fullLine[2:]
+    lines = fullLine.split(",")
+    for line in lines:
+      print(f"parse line {line} len {len(line)}")
+      if len(line) < 3:
+          continue
+      numbers = line.split(' ')
+      x = int(numbers[0])
+      y = int(numbers[1])
+      flags = 0
+      na = 0
+      name = origName
+      if (len(numbers) > 2):
+          flags = int(numbers[2])
+      if flags >= 128:
+          name += " (ЛВ)"
+      if flags - flags//64 == 32:
+          na = 1
+      name = name + (" " * (14 - len(name)))
+      if na == 0:
+         fileLine = f" {name} | {x:02d}-{y:02d} |       |       |       |       |       |       |\n"
+      else: 
+         fileLine = f" {name} | {x:02d}-{y:02d} |  N/A  |  N/A  |  N/A  |  N/A  |  N/A  |  N/A  |\n" 
+      print(fileLine)
+      file.write(fileLine)
 
-def parseUnitAction(line, name, file, isNotDL):
-    print(f"parse {name}")
-    line = line.replace(",", "")
-    numbers = line.split(' ')
-    x = int(numbers[1])
-    y = int(numbers[2])
-    flags = 0
-    na = 0
-    if (len(numbers) > 3):
-        print(f"flags {numbers[3]}")
-        flags = int(numbers[3])
-    if flags >= 128:
-        if isNotDL == 1:
-            name += " (ЛВ)"
-        else:
-            name += " (Ст)"
-    if flags - flags//64 == 32:
-        na = 1
-    name = name + (" " * (18 - len(name)))
-    if na == 0:
-       fileLine = f" {name} | {x:02d}-{y:02d} |                                       |\n"
-    else: 
-       fileLine = f" {name} | {x:02d}-{y:02d} |                    N/A                |\n"
-    print(fileLine)
-    file.write(fileLine)
+def parseUnitAction(fullLine, origName, file, isNotDL):
+    print(f"parse {origName} in line {fullLine}")
+    fullLine = fullLine[2:]
+    lines = fullLine.split(",")
+    for line in lines:
+      print(f"parse line {line}")
+      if len(line) < 3:
+        continue
+      numbers = line.split(' ')
+      x = int(numbers[0])
+      y = int(numbers[1])
+      flags = 0
+      na = 0
+      name = origName
+      if (len(numbers) > 2):
+          flags = int(numbers[2])
+      if flags >= 128:
+          if isNotDL == 1:
+              name += " (ЛВ)"
+          else:
+              name += " (Ст)"
+      if flags - flags//64 == 32:
+          na = 1
+      name = name + (" " * (18 - len(name)))
+      if na == 0:
+         fileLine = f" {name} | {x:02d}-{y:02d} |                                       |\n"
+      else: 
+         fileLine = f" {name} | {x:02d}-{y:02d} |                    N/A                |\n"
+      print(fileLine)
+      file.write(fileLine)
 
 with open(sys.argv[1], 'r', encoding='cp1251') as rfile:
     with open('moveOrders.txt', 'w', encoding='cp1251') as wfile:
